@@ -3,6 +3,8 @@
 
 # Desafio Módulo 5 - Backend
 
+integrantes: Davi Bernardes Do Nascimento, Thiago Tiburcio, Fabio Jose dos Santos Lopes, Leandro da Silva Magalhães, Renato Felizardo da Silva, Samuel Leme
+
 Seja bem vindo(a) ao desafio do módulo 5.
 
 Sua tarefa como desenvolvedor(a) será criar uma API para um PDV (Frente de Caixa). Esse será um projeto piloto, ou seja, no futuro outras funcionalidades serão implementadas.
