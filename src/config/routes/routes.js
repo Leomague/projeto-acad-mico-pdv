@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
-const { deploy } = require('../../controllers/deploy')
+const { deploy, db } = require('../../controllers/deploy')
 
 const rotas = express();
 
