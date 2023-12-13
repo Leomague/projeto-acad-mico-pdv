@@ -17,7 +17,7 @@ const editarPerfil = async (req, res) => {
   if (!nome && !email && !senha) {
     return res
       .status(400)
-      .json({ mensagem: "Ao menos um campo deve ser informado" });
+      .json({ mensagem: "Ao menos um campo deve ser informado" };
   }
 
   try {
