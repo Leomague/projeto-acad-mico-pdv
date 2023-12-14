@@ -1,6 +1,7 @@
 const knex = require("../config/connection/connection");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { error400, error401, error500 } = require('../config/chat/statusCode');
 
 const cadastro = "cadastrar usuario";
 
@@ -17,7 +18,7 @@ const editarPerfil = async (req, res) => {
   if (!nome && !email && !senha) {
     return res
       .status(400)
-      .json({ mensagem: "Ao menos um campo deve ser informado" });
+      .json(error401);
   }
 
   try {
@@ -30,7 +31,7 @@ const editarPerfil = async (req, res) => {
     if (emailEmUso) {
       return res
         .status(400)
-        .json({ mensagem: "O email já está em uso por outro usuário" });
+        .json(error400);
     }
     const senhaCriptografada = await bcrypt.hash(senha, 10);
 
@@ -43,7 +44,7 @@ const editarPerfil = async (req, res) => {
     return res.status(204).end();
   } catch (error) {
     console.error(error.message);
-    return res.status(500).json({ mensagem: "Erro interno do servidor" });
+    return res.status(500).json(error500);
   }
 };
 
