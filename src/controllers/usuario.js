@@ -18,7 +18,7 @@ const editarPerfil = async (req, res) => {
   if (!nome && !email && !senha) {
     return res
       .status(400)
-      .json(error401);
+      .json(error400);
   }
 
   try {
@@ -30,8 +30,8 @@ const editarPerfil = async (req, res) => {
 
     if (emailEmUso) {
       return res
-        .status(400)
-        .json(error400);
+        .status(401)
+        .json(error401);
     }
     const senhaCriptografada = await bcrypt.hash(senha, 10);
 
