@@ -11,7 +11,7 @@ const login = async (req, res) => {
     }
 
     try {
-        const {rowCount, rows} = await query('select * from usuarios where email = $1', [email]);
+        const { rowCount, rows } = await query('select * from usuarios where email = $1', [email]);
 
         if (rowCount <= 0) {
             return res.status(400).json(error400);
