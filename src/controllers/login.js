@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { error400, error500 } = require('../config/chat/statusCode');
 
 const login = async (req, res) => {
-    const { email, senha } = req.body;
+    const {mail, senha} = req.body;
 
     if (!email || !senha) {
         return res.status(400).json(error400);
