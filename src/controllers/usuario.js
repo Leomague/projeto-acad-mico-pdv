@@ -8,7 +8,7 @@ const cadastrarUsuario = async (req, res) => {
 
   try {
     if (!nome || !email || !senha) {
-      return res.status(400).json({ error400, });
+      return res.status(400).json(error400);
     }
     const emailExiste = await pool.query(
       "select * from usuarios where email = $1",
@@ -16,7 +16,7 @@ const cadastrarUsuario = async (req, res) => {
     );
 
     if (emailExiste.rowCount > 0) {
-      return res.status(400).json({ error400 });
+      return res.status(400).json(error400);
     }
 
     const senhaCriptografada = await bcrypt.hash(senha, 10);
@@ -28,7 +28,7 @@ const cadastrarUsuario = async (req, res) => {
     const { senha: _, ...usuario } = rows[0];
     return res.status(201).json(usuario);
   } catch (error) {
-    return res.status(500).json({ error500 });
+    return res.status(500).json(error500);
   }
 };
 
