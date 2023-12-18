@@ -7,12 +7,15 @@ const { listarCategorias } = require('../../controllers/conta');
 
 const rotas = express();
 
-rotas.post('/usuario', cadastrarUsuario);
+rotas.use(express.json());
 
 rotas.use(cors());
-rotas.use(express.json());
-rotas.post('/login', login);
 
 rotas.get('/categorias', listarCategorias);
+rotas.post('/usuario', cadastrarUsuario);
+
+rotas.post('/login', login);
+
+
 
 module.exports = rotas;

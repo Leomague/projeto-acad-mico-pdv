@@ -1,34 +1,32 @@
-const pool = require('../config/connection/connection');
+const knex = require('../config/connection/connection');
 const bcrypt = require('bcrypt');
-const { error400, error500 } = require('../config/chat/statusCode')
-
+const chat = require('../config/chat/statusCode');
 
 const cadastrarUsuario = async (req, res) => {
   const { nome, email, senha } = req.body;
 
   try {
     if (!nome || !email || !senha) {
-      return res.status(400).json(error400);
+      return res.status(400).json(chat.error400);
     }
-    const emailExiste = await pool.query(
-      "select * from usuarios where email = $1",
-      [email]
-    );
 
-    if (emailExiste.rowCount > 0) {
-      return res.status(400).json(error400);
+    const emailExiste = await knex('usuarios').where({ email });
+
+    if (emailExiste.length > 0) {
+      return res.status(400).json(chat.error400);
     }
 
     const senhaCriptografada = await bcrypt.hash(senha, 10);
-    const query =
-      "insert into usuarios (nome,email,senha) values ($1,$2,$3) returning *";
 
-    const { rows } = await pool.query(query, [nome, email, senhaCriptografada]);
+    const novoUsuario = await knex('usuarios')
+      .insert({ nome, email, senha: senhaCriptografada })
+      .returning('*');
 
-    const { senha: _, ...usuario } = rows[0];
-    return res.status(201).json(usuario);
+    return res.status(201).json(novoUsuario[0]);
+
   } catch (error) {
-    return res.status(500).json(error500);
+    console.error(error);
+    return res.status(500).json(chat.error500);
   }
 };
 
