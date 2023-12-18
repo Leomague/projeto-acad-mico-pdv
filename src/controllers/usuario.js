@@ -1,4 +1,4 @@
-const pool = require('../config/connection');
+const pool = require('../config/connection/connection');
 const bcrypt = require('bcrypt');
 const { error400, error500 } = require('../config/chat/statusCode')
 
