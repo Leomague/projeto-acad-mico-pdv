@@ -1,9 +1,30 @@
 const usuarioLogado = async (req, res, next) => {
-  //validar token do usuario logado
+  const { authorization } = req.headers;
 
-  return res.json('ok')
+  if (!authorization) {
+    return res.status(401).json({ message: 'não autorizado.' })
+  }
+
+  const token = authorization.split(' ')[1];
+
+  try {
+    const { id } = jwt.verify(token, senhaJwt);
+
+    const { rows, rowCount } = await pool.query('select * from usuarios where id = $1', [id]);
+
+    if (rowCount < 1) {
+      return res.status(401).json({ message: 'não autorizado.' })
+    }
+
+    req.user = rows[0];
+
+    next();
+  } catch (error) {
+    return res.status(500).json({ message: 'Não autorizado.' });
+  }
+
 }
 
 module.exports = {
   usuarioLogado
-}
+};

@@ -1,32 +1,32 @@
-const { query } = require('../config/connection/connection');
+const knex = require('../config/connection/connection');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { error400, error500 } = require('../config/chat/statusCode');
+const chat = require('../config/chat/statusCode');
+const senhaJwt = require('../config/security/passwordJwt');
 
 const login = async (req, res) => {
-
   const { email, senha } = req.body;
 
   if (!email || !senha) {
-    return res.status(400).json(error400);
+    return res.status(400).json(chat.error400);
   }
 
   try {
-    const { rowCount, rows } = await query('select * from usuarios where email = $1', [email]);
+    const usuarios = await knex('usuarios').where({ email });
 
-    if (rowCount <= 0) {
-      return res.status(400).json(error400);
+    if (usuarios.length < 1) {
+      return res.status(400).json(chat.error400);
     }
 
-    const [usuario] = rows;
+    const usuario = usuarios[0];
 
     const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
 
     if (!senhaCorreta) {
-      return res.status(400).json(error400);
+      return res.status(400).json(chat.error400);
     }
 
-    const token = jwt.sign({ id: usuario.id }, 'senhaSeguraParaToken', { expiresIn: '2h' });
+    const token = jwt.sign({ id: usuario.id }, senhaJwt, { expiresIn: '8h' });
 
     const { senha: _, ...dadosUsuario } = usuario;
 
@@ -36,10 +36,10 @@ const login = async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(500).json(error500);
+    return res.status(500).json(chat.error500);
   }
-}
+};
 
 module.exports = {
   login
-}
+};
