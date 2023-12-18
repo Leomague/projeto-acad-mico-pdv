@@ -6,7 +6,6 @@ const senhaJwt = require('../config/security/passwordJwt');
 
 const login = async (req, res) => {
   const { email, senha } = req.body;
-
   try {
     const usuarios = await knex('usuarios').where({ email });
 

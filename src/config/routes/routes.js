@@ -16,9 +16,9 @@ rotas.use(express.json());
 rotas.use(cors());
 
 rotas.get('/categorias', listarCategorias);
-rotas.post('/usuario', validateHeadersRequest(schemaCadastro), cadastrarUsuario);
-rotas.post('/login', validateHeadersRequest(schemaLogin), login);
-rotas.put('/usuario', validateBodyRequest(schemaCadastro), editarPerfil);
-rotas.get('/perfil', validateBodyRequest(schemaCadastro), detalharPerfi);
+rotas.post('/usuario', validateBodyRequest(schemaCadastro), cadastrarUsuario);
+rotas.post('/login', validateBodyRequest(schemaLogin), login);
+rotas.put('/usuario', usuarioLogado, editarPerfil);
+rotas.get('/perfil', usuarioLogado, detalharPerfi);
 
 module.exports = rotas;
