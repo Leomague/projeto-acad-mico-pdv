@@ -1,5 +1,3 @@
-
-const jwt = require("jsonwebtoken");
 const knex = require('../config/connection/connection');
 const bcrypt = require('bcrypt');
 const chat = require('../config/chat/statusCode');
@@ -31,49 +29,50 @@ const cadastrarUsuario = async (req, res) => {
     return res.status(500).json(chat.error500);
   }
 };
-//todas as rotas abaixo devem conter validacao do token de autenticação do usuario logado.
+
 
 const detalharPerfi = "detalhar perfil do usuario logado";
 
 const editarPerfil = async (req, res) => {
   const { nome, email, senha } = req.body;
-  const usuarioLogado = req.usuario;
-
-  if (!nome && !email && !senha) {
-    return res
-      .status(400)
-      .json(error400);
-  }
+  const usuarioLogado = req.user;
 
   try {
-    const emailEmUso = await knex("usuarios")
-      .select("id")
-      .where("email", email)
-      .where("id", "<>", usuarioLogado.id)
-      .first();
+    if (email) {
+      const emailEmUso = await knex("usuarios")
+        .select("id")
+        .where({ email })
+        .where("id", "<>", usuarioLogado.id)
+        .first();
 
-    if (emailEmUso) {
-      return res
-        .status(401)
-        .json(error401);
+      if (emailEmUso) {
+        return res.status(401).json(chat.error401);
+      }
     }
-    const senhaCriptografada = await bcrypt.hash(senha, 10);
 
-    await knex("usuarios").where("id", usuarioLogado.id).update({
-      nome,
-      email,
-      senha: senhaCriptografada,
-    });
+    const usuarioAtualizado = {
+      nome: nome || usuarioLogado.nome,
+      email: email || usuarioLogado.email,
+      senha: senha || usuarioLogado.senha
+    };
 
-    return res.status(204).end();
+    if (senha && senha !== usuarioLogado.senha) {
+      const senhaCriptografada = await bcrypt.hash(senha, 10);
+      usuarioAtualizado.senha = senhaCriptografada;
+    }
+
+    await knex("usuarios")
+      .where("id", usuarioLogado.id)
+      .update(usuarioAtualizado);
+
+    return res.status(200).send(usuarioLogado);
   } catch (error) {
-    console.error(error.message);
-    return res.status(500).json(error500);
+    return res.status(500).json(chat.error500);
   }
 };
 
 module.exports = {
   cadastrarUsuario,
   detalharPerfi,
-  editarPerfil,
+  editarPerfil
 };

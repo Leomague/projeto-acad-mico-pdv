@@ -1,11 +1,12 @@
 require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
-const { editarPerfil } = require('../../controllers/usuario');
-const { login } = require('../../controllers/login');
-const { cadastrarUsuario } = require('../../controllers/usuario')
-const { listarCategorias } = require('../../controllers/conta');
 
+const { listarCategorias } = require('../../controllers/conta');
+const { cadastrarUsuario } = require('../../controllers/usuario');
+const { login } = require('../../controllers/login');
+const usuarioLogado = require('../middleware/usuarioLogado');
+const { editarPerfil } = require('../../controllers/usuario');
 
 const rotas = express();
 
@@ -13,10 +14,10 @@ rotas.use(express.json());
 
 rotas.use(cors());
 
-rotas.put('/usuario', editarPerfil)
 rotas.get('/categorias', listarCategorias);
 rotas.post('/usuario', cadastrarUsuario);
 
 rotas.post('/login', login);
+rotas.put('/usuario', usuarioLogado, editarPerfil);
 
 module.exports = rotas;

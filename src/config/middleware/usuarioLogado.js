@@ -1,8 +1,13 @@
+const chat = require('../chat/statusCode');
+const knex = require('../connection/connection');
+const jwt = require('jsonwebtoken')
+const senhaJwt = require('../security/passwordJwt');
+
 const usuarioLogado = async (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
-    return res.status(401).json({ message: 'não autorizado.' })
+    return res.status(401).json(chat.error401);
   }
 
   const token = authorization.split(' ')[1];
@@ -10,21 +15,19 @@ const usuarioLogado = async (req, res, next) => {
   try {
     const { id } = jwt.verify(token, senhaJwt);
 
-    const { rows, rowCount } = await pool.query('select * from usuarios where id = $1', [id]);
+    const usuario = await knex('usuarios').where({ id }).first();
 
-    if (rowCount < 1) {
-      return res.status(401).json({ message: 'não autorizado.' })
+    if (!usuario) {
+      return res.status(401).json(chat.error401);
     }
 
-    req.user = rows[0];
+    req.user = usuario;
 
     next();
   } catch (error) {
-    return res.status(500).json({ message: 'Não autorizado.' });
+    console.log(error.message);
+    return res.status(500).json(chat.error500);
   }
-
-}
-
-module.exports = {
-  usuarioLogado
 };
+
+module.exports = usuarioLogado;
