@@ -33,8 +33,8 @@ const schemaLogin = joi.object({
     'any.required': 'The email field is mandatory',
     'string.empty': 'The email field is mandatory'
   }),
-  password: joi.string().min(minPass).required().messages({
-    'string.min': `The password field must have at least ${minPass}, characters`,
+  password: joi.string().min(4).required().messages({
+    'string.min': `The password field must have at least ${4}, characters`,
     'any.required': 'The password field is mandatory',
     'string.empty': 'The password field is mandatory'
   }),
