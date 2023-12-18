@@ -31,7 +31,9 @@ const cadastrarUsuario = async (req, res) => {
 };
 
 
-const detalharPerfi = "detalhar perfil do usuario logado";
+const detalharPerfi = async (req, res) => {
+  return res.json(req.user)
+};
 
 const editarPerfil = async (req, res) => {
   const { nome, email, senha } = req.body;

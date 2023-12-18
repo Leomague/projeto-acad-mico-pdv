@@ -6,7 +6,7 @@ const { listarCategorias } = require('../../controllers/conta');
 const { cadastrarUsuario } = require('../../controllers/usuario');
 const { login } = require('../../controllers/login');
 const usuarioLogado = require('../middleware/usuarioLogado');
-const { editarPerfil } = require('../../controllers/usuario');
+const { editarPerfil, detalharPerfi } = require('../../controllers/usuario');
 
 const rotas = express();
 
@@ -19,5 +19,6 @@ rotas.post('/usuario', cadastrarUsuario);
 
 rotas.post('/login', login);
 rotas.put('/usuario', usuarioLogado, editarPerfil);
+rotas.get('/perfil', usuarioLogado, detalharPerfi);
 
 module.exports = rotas;
