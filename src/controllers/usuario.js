@@ -6,10 +6,6 @@ const cadastrarUsuario = async (req, res) => {
   const { nome, email, senha } = req.body;
 
   try {
-    if (!nome || !email || !senha) {
-      return res.status(400).json(chat.error400);
-    }
-
     const emailExiste = await knex('usuarios').where({ email });
 
     if (emailExiste.length > 0) {

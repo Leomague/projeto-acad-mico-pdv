@@ -7,10 +7,6 @@ const senhaJwt = require('../config/security/passwordJwt');
 const login = async (req, res) => {
   const { email, senha } = req.body;
 
-  if (!email || !senha) {
-    return res.status(400).json(chat.error400);
-  }
-
   try {
     const usuarios = await knex('usuarios').where({ email });
 
