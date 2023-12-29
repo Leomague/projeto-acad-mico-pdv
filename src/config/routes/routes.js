@@ -7,7 +7,7 @@ const { cadastrarUsuario } = require('../../controllers/usuario');
 const { login } = require('../../controllers/login');
 const usuarioLogado = require('../middleware/usuarioLogado');
 const { editarPerfil, detalharPerfi } = require('../../controllers/usuario');
-const { validateBodyRequest, validateHeadersRequest } = require('../validation/schemaUser');
+const { validateBodyRequest } = require('../validation/schemaUser');
 const { schemaCadastro, schemaLogin } = require('../middleware/validarCorpo');
 
 const rotas = express();
