@@ -12,7 +12,6 @@ const { schemaCadastro, schemaLogin } = require('../middleware/validarCorpo');
 
 const rotas = express();
 
-rotas.use(express.json());
 rotas.use(cors());
 
 rotas.get('/categorias', listarCategorias);
