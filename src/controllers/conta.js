@@ -26,7 +26,7 @@ const editarProduto = (req, res) => {
 
 }
 
-const listarProduto = (req, res) => {
+const listarProdutos = (req, res) => {
   //seu código aqui...
 
 }
