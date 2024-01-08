@@ -16,6 +16,51 @@ const listarCategorias = async (req, res) => {
   }
 };
 
+const cadastrarProduto = (req, res) => {
+  //seu código aqui...
+
+}
+
+const editarProduto = (req, res) => {
+  //seu código aqui...
+
+}
+
+const listarProduto = (req, res) => {
+  //seu código aqui...
+
+}
+
+const DetalharProduto = (req, res) => {
+  //seu código aqui...
+
+}
+
+const deletarProduto = (req, res) => {
+  //seu código aqui...
+
+}
+
+const cadastrarCliente = (req, res) => {
+  //seu código aqui...
+
+}
+
+const editarDadosDoCLiente = (req, res) => {
+  //seu código aqui...
+
+}
+
+const listarClientes = (req, res) => {
+  //seu código aqui...
+
+}
+
+const detalharCliiente = (req, res) => {
+  //seu código aqui...
+
+}
+
 module.exports = {
   listarCategorias
 };
