@@ -56,7 +56,7 @@ const listarClientes = (req, res) => {
 
 }
 
-const detalharCliiente = (req, res) => {
+const detalharCliente = (req, res) => {
   //seu código aqui...
 
 }
