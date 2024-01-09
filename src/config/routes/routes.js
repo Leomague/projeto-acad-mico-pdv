@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
-const { listarCategorias } = require('../../controllers/conta');
+const { listarCategorias, cadastrarProduto } = require('../../controllers/conta');
 const { cadastrarUsuario } = require('../../controllers/usuario');
 const { login } = require('../../controllers/login');
 const usuarioLogado = require('../middleware/usuarioLogado');
@@ -19,5 +19,7 @@ rotas.post('/usuario', validateBodyRequest(schemaCadastro), cadastrarUsuario);
 rotas.post('/login', validateBodyRequest(schemaLogin), login);
 rotas.put('/usuario', usuarioLogado, editarPerfil);
 rotas.get('/perfil', usuarioLogado, detalharPerfi);
+
+rotas.post('/produto', usuarioLogado, validateBodyRequest(cadastrarProduto));
 
 module.exports = rotas;

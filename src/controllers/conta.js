@@ -16,8 +16,38 @@ const listarCategorias = async (req, res) => {
   }
 };
 
-const cadastrarProduto = (req, res) => {
-  //seu código aqui...
+const cadastrarProduto = async (req, res) => {
+  const {
+    descricao,
+    quantidade_estoque,
+    valor,
+    categoria_id
+  } = req.body;
+
+  if (!descricao || !quantidade_estoque || !valor || !categoria_id) {
+    return res.status(400).json(chat.error400)
+  }
+
+  try {
+
+    const categoriaExistente = await knex('categorias').where('id', '=', categoria_id);
+
+    if (!categoriaExistente) {
+      return res.status(400).json(chat.error400)
+    }
+
+    const novoProduto = await knex('produtos').insert({
+      descricao,
+      quantidade_estoque,
+      valor,
+      categoria_id
+    }).returning('*');
+
+    return res.status(201).json(novoProduto[0]);
+
+  } catch (error) {
+    return res.status(500).json(chat.error500)
+  }
 
 }
 
@@ -62,5 +92,6 @@ const detalharCliente = (req, res) => {
 }
 
 module.exports = {
-  listarCategorias
+  listarCategorias,
+  cadastrarProduto
 };
