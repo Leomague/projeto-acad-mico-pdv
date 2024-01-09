@@ -20,6 +20,6 @@ rotas.post('/login', validateBodyRequest(schemaLogin), login);
 rotas.put('/usuario', usuarioLogado, editarPerfil);
 rotas.get('/perfil', usuarioLogado, detalharPerfi);
 
-rotas.post('/produto', usuarioLogado, validateBodyRequest(cadastrarProduto));
+rotas.post('/produto', usuarioLogado, cadastrarProduto);
 
 module.exports = rotas;
