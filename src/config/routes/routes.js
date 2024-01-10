@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
-const { listarCategorias, cadastrarProduto } = require('../../controllers/conta');
+const { listarCategorias, cadastrarProduto, editarProduto, editarDadosDoCLiente } = require('../../controllers/conta');
 const { cadastrarUsuario } = require('../../controllers/usuario');
 const { login } = require('../../controllers/login');
 const usuarioLogado = require('../middleware/usuarioLogado');
@@ -21,5 +21,7 @@ rotas.put('/usuario', usuarioLogado, editarPerfil);
 rotas.get('/perfil', usuarioLogado, detalharPerfi);
 
 rotas.post('/produto', usuarioLogado, cadastrarProduto);
+rotas.put('/produto/:id' , editarProduto);
+rotas.put('/cliente/:id' , editarDadosDoCLiente);
 
 module.exports = rotas;
