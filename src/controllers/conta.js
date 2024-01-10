@@ -155,5 +155,5 @@ module.exports = {
   listarCategorias,
   cadastrarProduto,
   editarProduto,
-  editarDadosDoCLiente,
+  editarDadosDoCLiente
 };
