@@ -53,7 +53,15 @@ const editarProduto = async (req, res) => {
   const { descricao, quantidade_estoque, valor, categoria_id } = req.body;
 
   try {
+    const categoriaExiste = await knex("categorias")
+      .where({ id: categoria_id })
+      .first();
+
     const produtoExistente = await knex("produtos").where({ id }).first();
+
+    if (!categoriaExiste) {
+      return res.status(400).json(chat.error400);
+    }
 
     if (!produtoExistente) {
       return res.status(400).json(chat.error400);
