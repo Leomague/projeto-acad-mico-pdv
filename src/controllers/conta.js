@@ -1,5 +1,6 @@
 const knex = require("../config/connection/connection");
 const chat = require("../config/chat/statusCode");
+const { dataExistente } = require("../config/validation/existsInDB");
 
 const listarCategorias = async (req, res) => {
   try {
@@ -23,11 +24,7 @@ const cadastrarProduto = async (req, res) => {
   }
 
   try {
-    const categoriaExistente = await knex("categorias").where(
-      "id",
-      "=",
-      categoria_id
-    );
+    const categoriaExistente = await dataExistente('categorias', 'id', categoria_id);
 
     if (!categoriaExistente) {
       return res.status(400).json(chat.error400);
@@ -53,21 +50,9 @@ const editarProduto = async (req, res) => {
   const { descricao, quantidade_estoque, valor, categoria_id } = req.body;
 
   try {
-    const categoriaExiste = await knex("categorias")
-      .where({ id: categoria_id })
-      .first();
-
-    const produtoExistente = await knex("produtos").where({ id }).first();
-
-    if (!categoriaExiste) {
-      return res.status(400).json(chat.error400);
-    }
+    const produtoExistente = await dataExistente('produtos', "id", id)
 
     if (!produtoExistente) {
-      return res.status(400).json(chat.error400);
-    }
-
-    if (!descricao || !quantidade_estoque || !valor || !categoria_id) {
       return res.status(400).json(chat.error400);
     }
 
@@ -80,7 +65,7 @@ const editarProduto = async (req, res) => {
 
     return res.status(200).json(chat.status200);
   } catch (error) {
-    return res.status(500).json(chat.error500);
+    return res.status(500).json(error.message);
   }
 };
 

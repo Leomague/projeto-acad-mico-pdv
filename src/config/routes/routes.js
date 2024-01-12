@@ -21,7 +21,7 @@ rotas.put('/usuario', usuarioLogado, editarPerfil);
 rotas.get('/perfil', usuarioLogado, detalharPerfi);
 
 rotas.post('/produto', usuarioLogado, cadastrarProduto);
-rotas.put('/produto/:id' , editarProduto);
-rotas.put('/cliente/:id' , editarDadosDoCLiente);
+rotas.put('/produto/:id', usuarioLogado, editarProduto);
+rotas.put('/cliente/:id', usuarioLogado, editarDadosDoCLiente);
 
 module.exports = rotas;
