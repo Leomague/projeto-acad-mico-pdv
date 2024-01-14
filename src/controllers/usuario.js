@@ -27,7 +27,7 @@ const cadastrarUsuario = async (req, res) => {
 };
 
 
-const detalharPerfi = async (req, res) => {
+const detalharPerfil = async (req, res) => {
   return res.json(req.user)
 };
 
@@ -71,6 +71,6 @@ const editarPerfil = async (req, res) => {
 
 module.exports = {
   cadastrarUsuario,
-  detalharPerfi,
+  detalharPerfil,
   editarPerfil
 };
