@@ -292,6 +292,5 @@ module.exports = {
   editarProduto,
   editarDadosDoCliente,
   listarClientes,
-  cadastrarCliente,
-  detalharCliente
+  cadastrarCliente
 };
