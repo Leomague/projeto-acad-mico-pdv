@@ -147,9 +147,9 @@ const cadastrarCliente = async (req, res) => {
 
   try {
 
-    const emailExistente = await knex('clientes').where('email', '=', email);
+    const emailExistente = await dataExistente('clientes', 'email', '=', email);
 
-    const cpfExistente = await knex('clientes').where('cpf', '=', cpf);
+    const cpfExistente = await dataExistente('clientes', 'cpf', '=', cpf);
 
     if (cpfExistente.length > 0 || emailExistente.length > 0) {
       return res.status(400).json(chat.error400);
