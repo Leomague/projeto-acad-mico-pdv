@@ -73,20 +73,12 @@ const SchemaValidarCliente = joi.object({
 });
 
 const SchemaEditarCliente = joi.object({
-  nome: joi.string().messages({
-    'any.required': 'O campo nome é obrigatório',
-    'string.empty': 'O campo nome é obrigatório'
-  }),
   email: joi.string().email().messages({
-    'string.email': 'O campo de email deve ter um formato válido',
-    'any.required': 'O campo de email é obrigatório',
-    'string.empty': 'O campo de email é obrigatório'
+    'string.email': 'O campo de email deve ter um formato válido'
   }),
   cpf: joi.string().min(11).max(14).messages({
     'string.min': 'O campo cpf é muito pequeno',
-    'string.max': 'O campo pcf é muito grande',
-    'any.required': 'O campo cpf é obrigatório',
-    'string.empty': 'O campo cpf é obrigatório'
+    'string.max': 'O campo pcf é muito grande'
   }),
 });
 

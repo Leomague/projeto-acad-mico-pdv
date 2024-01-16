@@ -19,13 +19,8 @@ const listarCategorias = async (req, res) => {
 const cadastrarProduto = async (req, res) => {
   const { descricao, quantidade_estoque, valor, categoria_id } = req.body;
 
-  if (!descricao || !quantidade_estoque || !valor || !categoria_id) {
-    return res.status(400).json(chat.error400);
-  }
-
   try {
-    const categoriaExistente = await dataExistente('categorias', 'id', categoria_id);
-
+    const categoriaExistente = await dataExistente('categorias', 'id', '=', categoria_id);
     if (!categoriaExistente) {
       return res.status(400).json(chat.error400);
     }
@@ -41,6 +36,7 @@ const cadastrarProduto = async (req, res) => {
 
     return res.status(201).json(novoProduto[0]);
   } catch (error) {
+    console.log(error.message);
     return res.status(500).json(chat.error500);
   }
 };
@@ -48,6 +44,10 @@ const cadastrarProduto = async (req, res) => {
 const editarProduto = async (req, res) => {
   const { id } = req.params;
   const { descricao, quantidade_estoque, valor, categoria_id } = req.body;
+
+  if (!id) {
+    return res.status(404).json(chat.error404)
+  }
 
   try {
     const produtoExistente = await dataExistente('produtos', "id", '=', id)
@@ -118,16 +118,32 @@ const DetalharProduto = async (req, res) => {
   }
 };
 
-const deletarProduto = (req, res) => {
-  //seu código aqui...
+const deletarProduto = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(404).json(chat.error404)
+  }
+
+  try {
+    const produtoExistente = await dataExistente('produtos', 'id', '=', id);
+
+    if (produtoExistente.length < 1) {
+      return res.status(404).json(chat.error404)
+    }
+
+    await knex('produtos').delete().where({ id });
+
+    return res.status(204).json();
+
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json(chat.error500)
+  }
 };
 
 const cadastrarCliente = async (req, res) => {
   const { nome, email, cpf } = req.body;
-
-  if (!nome || !email || !cpf) {
-    return res.status(400).json(chat.error400);
-  }
 
   try {
 
@@ -260,6 +276,7 @@ module.exports = {
   cadastrarProduto,
   listarProdutos,
   DetalharProduto,
+  deletarProduto,
   detalharCliente,
   editarProduto,
   editarDadosDoCliente,
