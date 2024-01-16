@@ -165,7 +165,8 @@ const cadastrarCliente = async (req, res) => {
       bairro,
       cidade,
       estado
-    }).returning('*')
+    })
+      .returning('*');
 
     return res.status(201).json(novoCliente[0])
 
