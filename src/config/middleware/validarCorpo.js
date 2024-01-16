@@ -70,6 +70,12 @@ const SchemaValidarCliente = joi.object({
     'any.required': 'O campo cpf é obrigatório',
     'string.empty': 'O campo cpf é obrigatório'
   }),
+  cep: joi.string(),
+  rua: joi.string(),
+  numero: joi.string(),
+  bairro: joi.string(),
+  cidade: joi.string(),
+  estado: joi.string()
 });
 
 const SchemaEditarCliente = joi.object({
@@ -80,6 +86,12 @@ const SchemaEditarCliente = joi.object({
     'string.min': 'O campo cpf é muito pequeno',
     'string.max': 'O campo pcf é muito grande'
   }),
+  cep: joi.string(),
+  rua: joi.string(),
+  numero: joi.string(),
+  bairro: joi.string(),
+  cidade: joi.string(),
+  estado: joi.string()
 });
 
 module.exports = {
