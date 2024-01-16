@@ -90,12 +90,32 @@ const editarProduto = async (req, res) => {
   }
 };
 
-const listarProdutos = (req, res) => {
-  //seu código aqui...
+const listarProdutos = async (req, res) => {
+  try {
+    const produtos = await knex('produtos');
+    if (produtos.length < 1) {
+      return res.status(404).json(chat.error404);
+    }
+    return res.status(200).json(produtos)
+
+  } catch (error) {
+    return res.status(500).json(chat.error500);
+  }
 };
 
-const DetalharProduto = (req, res) => {
-  //seu código aqui...
+const DetalharProduto = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const produtoExistente = await dataExistente('produtos', 'id', '=', id);
+
+    if (produtoExistente.length < 1) {
+      return res.status(404).json(chat.error404);
+    }
+    return res.status(200).json(produtoExistente[0])
+
+  } catch (error) {
+    return res.status(500).json(chat.error500);
+  }
 };
 
 const deletarProduto = (req, res) => {
@@ -218,15 +238,32 @@ const listarClientes = async (req, res) => {
   }
 }
 
-const detalharCliente = (req, res) => {
-  //seu código aqui...
+const detalharCliente = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const clienteExistente = await dataExistente('clientes', 'id', '=', id);
+
+    if (clienteExistente.length < 1) {
+      const clientes = await knex('clientes')
+      return res.status(200).json(clientes)
+    }
+    return res.status(200).json(clienteExistente[0])
+
+  } catch (error) {
+    return res.status(500).json(chat.error500);
+  }
 };
 
 module.exports = {
   listarCategorias,
   cadastrarProduto,
+  listarProdutos,
+  DetalharProduto,
+  detalharCliente,
   editarProduto,
   editarDadosDoCliente,
   listarClientes,
-  cadastrarCliente
+  cadastrarCliente,
+  detalharCliente
 };

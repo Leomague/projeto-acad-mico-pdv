@@ -8,7 +8,10 @@ const {
   editarProduto,
   editarDadosDoCliente,
   listarClientes,
-  cadastrarCliente
+  cadastrarCliente,
+  detalharCliente,
+  listarProdutos,
+  DetalharProduto
 } = require('../../controllers/conta');
 const { cadastrarUsuario } = require('../../controllers/usuario');
 const { login } = require('../../controllers/login');
@@ -30,10 +33,12 @@ rotas.use(usuarioLogado)
 rotas.put('/usuario', editarPerfil);
 rotas.get('/perfil', detalharPerfil);
 rotas.post('/produto', validateBodyRequest(schemaCadastroProduto), cadastrarProduto);
+rotas.get('/produto', listarProdutos);
+rotas.get('/produto/:id', DetalharProduto);
 rotas.put('/produto/:id', editarProduto);
 rotas.post('/cliente', validateBodyRequest(SchemaValidarCliente), cadastrarCliente);
 rotas.put('/cliente/:id', validateBodyRequest(SchemaEditarCliente), editarDadosDoCliente);
 rotas.get('/cliente', listarClientes);
-
+rotas.get('/cliente/:id', detalharCliente);
 
 module.exports = rotas;
