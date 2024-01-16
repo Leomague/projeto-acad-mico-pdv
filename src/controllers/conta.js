@@ -173,6 +173,10 @@ const editarDadosDoCliente = async (req, res) => {
   const { id } = req.params;
   const { nome, email, cpf, cep, rua, numero, bairro, cidade, estado } = req.body;
 
+  if (Object.keys(req.body).length === 0) {
+    return res.status(400).json(chat.error400)
+  }
+
   try {
     const clienteExistente = await dataExistente('clientes', 'id', '=', id);
 
