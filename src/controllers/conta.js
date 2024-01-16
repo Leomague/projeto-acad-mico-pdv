@@ -143,7 +143,7 @@ const deletarProduto = async (req, res) => {
 };
 
 const cadastrarCliente = async (req, res) => {
-  const { nome, email, cpf } = req.body;
+  const { nome, email, cpf, cep, rua, numero, bairro, cidade, estado } = req.body;
 
   try {
 
@@ -158,7 +158,13 @@ const cadastrarCliente = async (req, res) => {
     const novoCliente = await knex('clientes').insert({
       nome,
       email,
-      cpf
+      cpf,
+      cep,
+      rua,
+      numero,
+      bairro,
+      cidade,
+      estado
     }).returning('*')
 
     return res.status(201).json(novoCliente[0])
