@@ -448,7 +448,7 @@ Deveremos incluir um par√¢metro do tipo query **cliente_id** para que seja poss√
     {
         "pedido": {
             "id": 1,
-            "valor_total": 230010,
+            "valor_total": 460010,
             "observacao": null,
             "cliente_id": 1
         },
