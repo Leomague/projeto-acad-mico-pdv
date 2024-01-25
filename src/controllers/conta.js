@@ -282,6 +282,59 @@ const detalharCliente = async (req, res) => {
   }
 };
 
+const cadastrarPedido = async (req, res) => {
+  try {
+    const { cliente_id, observacao, pedidos_produtos } = req.body;
+
+    if (!cliente_id || !pedidos_produtos || pedidos_produtos.length < 1) {
+      return res.status(400).json(chat.error400);
+    }
+
+    if (!Array.isArray(pedidos_produtos)) {
+      return res.status(400).json(chat.error400);
+    }
+
+    const clienteExistente = await dataExistente('clientes', 'id', '=', cliente_id);
+
+    if (clienteExistente.length < 1) {
+      return res.status(404).json(chat.error404);
+    }
+
+    let valorTotal = 0;
+
+    for (const produtoInfo of pedidos_produtos) {
+      const { produto_id, quantidade_produto } = produtoInfo;
+
+      let produto = await knex('produtos').where({ id: produto_id }).first();
+
+      if (!produto) {
+        return res.status(404).json({ error: 'Produto não encontrado' });
+      }
+
+      if (produto.quantidade_estoque < quantidade_produto) {
+        return res.status(400).json({ error: `Quantidade em estoque insuficiente para o produto ${produto.descricao}` });
+      }
+
+      valorTotal += quantidade_produto * produto.valor;
+
+      await knex('produtos').where({ id: produto_id }).decrement('quantidade_estoque', quantidade_produto);
+    }
+
+    await knex('pedidos').insert({
+      cliente_id,
+      observacao,
+      valor_total: valorTotal
+    })
+      .returning('id');
+
+    return res.status(201).json();
+
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json(chat.error500)
+  }
+};
+
 module.exports = {
   listarCategorias,
   cadastrarProduto,
@@ -292,5 +345,6 @@ module.exports = {
   editarProduto,
   editarDadosDoCliente,
   listarClientes,
-  cadastrarCliente
+  cadastrarCliente,
+  cadastrarPedido
 };

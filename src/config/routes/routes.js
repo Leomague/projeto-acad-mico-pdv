@@ -12,7 +12,8 @@ const {
   detalharCliente,
   listarProdutos,
   DetalharProduto,
-  deletarProduto
+  deletarProduto,
+  cadastrarPedido
 } = require('../../controllers/conta');
 const { cadastrarUsuario } = require('../../controllers/usuario');
 const { login } = require('../../controllers/login');
@@ -42,5 +43,6 @@ rotas.post('/cliente', validateBodyRequest(SchemaValidarCliente), cadastrarClien
 rotas.put('/cliente/:id', validateBodyRequest(SchemaEditarCliente), editarDadosDoCliente);
 rotas.get('/cliente', listarClientes);
 rotas.get('/cliente/:id', detalharCliente);
+rotas.get('/pedido', cadastrarPedido)
 
 module.exports = rotas;
