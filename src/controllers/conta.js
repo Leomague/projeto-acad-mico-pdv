@@ -132,6 +132,14 @@ const deletarProduto = async (req, res) => {
       return res.status(404).json(chat.error404)
     }
 
+    const produtoVinculadoEmPedido = await knex('pedido_produtos')
+    .where('produto_id','=', id)
+    .select('pedido_id');
+
+    if (produtoVinculadoEmPedido.length > 0) {
+      return res.status(404).json(chat.error403)
+    }
+
     await knex('produtos').delete().where({ id });
 
     return res.status(204).json();
