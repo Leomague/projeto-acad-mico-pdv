@@ -20,7 +20,12 @@ const cadastrarProduto = async (req, res) => {
   const { descricao, quantidade_estoque, valor, categoria_id } = req.body;
 
   try {
-    const categoriaExistente = await dataExistente('categorias', 'id', '=', categoria_id);
+    const categoriaExistente = await dataExistente(
+      "categorias",
+      "id",
+      "=",
+      categoria_id
+    );
     if (!categoriaExistente) {
       return res.status(400).json(chat.error400);
     }
@@ -30,7 +35,7 @@ const cadastrarProduto = async (req, res) => {
         descricao,
         quantidade_estoque,
         valor,
-        categoria_id
+        categoria_id,
       })
       .returning("*");
 
@@ -46,17 +51,22 @@ const editarProduto = async (req, res) => {
   const { descricao, quantidade_estoque, valor, categoria_id } = req.body;
 
   if (!id) {
-    return res.status(404).json(chat.error404)
+    return res.status(404).json(chat.error404);
   }
 
   try {
-    const produtoExistente = await dataExistente('produtos', "id", '=', id)
+    const produtoExistente = await dataExistente("produtos", "id", "=", id);
 
     if (categoria_id) {
-      const categoriaExistente = await dataExistente('categorias', "id", "=", categoria_id);
+      const categoriaExistente = await dataExistente(
+        "categorias",
+        "id",
+        "=",
+        categoria_id
+      );
 
       if (!categoriaExistente) {
-        return res.status(400).json(chat.error400)
+        return res.status(400).json(chat.error400);
       }
     }
 
@@ -70,7 +80,7 @@ const editarProduto = async (req, res) => {
       descricao: descricao || produto.descricao,
       quantidade_estoque: quantidade_estoque || produto.quantidade_estoque,
       valor: valor || produto.valor,
-      categoria_id: categoria_id || produto.categoria_id
+      categoria_id: categoria_id || produto.categoria_id,
     };
 
     if (
@@ -79,7 +89,7 @@ const editarProduto = async (req, res) => {
       produtoAtualizado.valor === produto.valor &&
       produtoAtualizado.categoria_id === produto.categoria_id
     ) {
-      return res.status(304).json()
+      return res.status(304).json();
     }
 
     await knex("produtos").where({ id }).update(produtoAtualizado);
@@ -92,12 +102,11 @@ const editarProduto = async (req, res) => {
 
 const listarProdutos = async (req, res) => {
   try {
-    const produtos = await knex('produtos');
+    const produtos = await knex("produtos");
     if (produtos.length < 1) {
       return res.status(404).json(chat.error404);
     }
-    return res.status(200).json(produtos)
-
+    return res.status(200).json(produtos);
   } catch (error) {
     return res.status(500).json(chat.error500);
   }
@@ -106,13 +115,12 @@ const listarProdutos = async (req, res) => {
 const DetalharProduto = async (req, res) => {
   const { id } = req.params;
   try {
-    const produtoExistente = await dataExistente('produtos', 'id', '=', id);
+    const produtoExistente = await dataExistente("produtos", "id", "=", id);
 
     if (produtoExistente.length < 1) {
       return res.status(404).json(chat.error404);
     }
-    return res.status(200).json(produtoExistente[0])
-
+    return res.status(200).json(produtoExistente[0]);
   } catch (error) {
     return res.status(500).json(chat.error500);
   }
@@ -122,78 +130,77 @@ const deletarProduto = async (req, res) => {
   const { id } = req.params;
 
   if (!id) {
-    return res.status(404).json(chat.error404)
+    return res.status(404).json(chat.error404);
   }
 
   try {
-    const produtoExistente = await dataExistente('produtos', 'id', '=', id);
+    const produtoExistente = await dataExistente("produtos", "id", "=", id);
 
     if (produtoExistente.length < 1) {
-      return res.status(404).json(chat.error404)
+      return res.status(404).json(chat.error404);
     }
 
-    const produtoVinculadoEmPedido = await knex('pedido_produtos')
-    .where('produto_id','=', id)
-    .select('pedido_id');
+    const produtoVinculadoEmPedido = await knex("pedido_produtos")
+      .where("produto_id", "=", id)
+      .select("pedido_id");
 
     if (produtoVinculadoEmPedido.length > 0) {
-      return res.status(404).json(chat.error403)
+      return res.status(404).json(chat.error403);
     }
 
-    await knex('produtos').delete().where({ id });
+    await knex("produtos").delete().where({ id });
 
     return res.status(204).json();
-
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json(chat.error500)
+    return res.status(500).json(chat.error500);
   }
 };
 
 const cadastrarCliente = async (req, res) => {
-  const { nome, email, cpf, cep, rua, numero, bairro, cidade, estado } = req.body;
+  const { nome, email, cpf, cep, rua, numero, bairro, cidade, estado } =
+    req.body;
 
   try {
+    const emailExistente = await dataExistente("clientes", "email", "=", email);
 
-    const emailExistente = await dataExistente('clientes', 'email', '=', email);
-
-    const cpfExistente = await dataExistente('clientes', 'cpf', '=', cpf);
+    const cpfExistente = await dataExistente("clientes", "cpf", "=", cpf);
 
     if (cpfExistente.length > 0 || emailExistente.length > 0) {
       return res.status(400).json(chat.error400);
     }
 
-    const novoCliente = await knex('clientes').insert({
-      nome,
-      email,
-      cpf,
-      cep,
-      rua,
-      numero,
-      bairro,
-      cidade,
-      estado
-    })
-      .returning('*');
+    const novoCliente = await knex("clientes")
+      .insert({
+        nome,
+        email,
+        cpf,
+        cep,
+        rua,
+        numero,
+        bairro,
+        cidade,
+        estado
+      })
+      .returning("*");
 
-    return res.status(201).json(novoCliente[0])
-
+    return res.status(201).json(novoCliente[0]);
   } catch (error) {
     return res.status(500).json(chat.error500);
   }
-
-}
+};
 
 const editarDadosDoCliente = async (req, res) => {
   const { id } = req.params;
-  const { nome, email, cpf, cep, rua, numero, bairro, cidade, estado } = req.body;
+  const { nome, email, cpf, cep, rua, numero, bairro, cidade, estado } =
+    req.body;
 
   if (Object.keys(req.body).length === 0) {
-    return res.status(400).json(chat.error400)
+    return res.status(400).json(chat.error400);
   }
 
   try {
-    const clienteExistente = await dataExistente('clientes', 'id', '=', id);
+    const clienteExistente = await dataExistente("clientes", "id", "=", id);
 
     if (!clienteExistente) {
       return res.status(400).json(chat.error400);
@@ -202,9 +209,9 @@ const editarDadosDoCliente = async (req, res) => {
     const cliente = clienteExistente[0];
 
     if (email) {
-      const emailExistente = await knex('clientes')
-        .where('email', '=', email)
-        .where('id', '<>', id)
+      const emailExistente = await knex("clientes")
+        .where("email", "=", email)
+        .where("id", "<>", id)
         .first();
 
       if (emailExistente) {
@@ -213,9 +220,9 @@ const editarDadosDoCliente = async (req, res) => {
     }
 
     if (cpf) {
-      const cpfExistente = await knex('clientes')
-        .where('cpf', '=', cpf)
-        .where('id', '<>', id)
+      const cpfExistente = await knex("clientes")
+        .where("cpf", "=", cpf)
+        .where("id", "<>", id)
         .first();
 
       if (cpfExistente) {
@@ -249,10 +256,9 @@ const editarDadosDoCliente = async (req, res) => {
       return res.status(304).json();
     }
 
-    await knex('clientes').where({ id }).update(clienteAtualizado);
+    await knex("clientes").where({ id }).update(clienteAtualizado);
 
     return res.status(200).json(chat.status200);
-
   } catch (error) {
     console.log(error.message);
     return res.status(500).json(chat.error500);
@@ -260,31 +266,28 @@ const editarDadosDoCliente = async (req, res) => {
 };
 
 const listarClientes = async (req, res) => {
-
   try {
-    const clientes = await knex('clientes');
+    const clientes = await knex("clientes");
     if (clientes.length < 1) {
       return res.status(404).json(chat.error404);
     }
-    return res.status(200).json(clientes)
-
+    return res.status(200).json(clientes);
   } catch (error) {
     return res.status(500).json(chat.error500);
   }
-}
+};
 
 const detalharCliente = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const clienteExistente = await dataExistente('clientes', 'id', '=', id);
+    const clienteExistente = await dataExistente("clientes", "id", "=", id);
 
     if (clienteExistente.length < 1) {
-      const clientes = await knex('clientes')
-      return res.status(200).json(clientes)
+      const clientes = await knex("clientes");
+      return res.status(200).json(clientes);
     }
-    return res.status(200).json(clienteExistente[0])
-
+    return res.status(200).json(clienteExistente[0]);
   } catch (error) {
     return res.status(500).json(chat.error500);
   }
@@ -302,7 +305,12 @@ const cadastrarPedido = async (req, res) => {
       return res.status(400).json(chat.error400);
     }
 
-    const clienteExistente = await dataExistente('clientes', 'id', '=', cliente_id);
+    const clienteExistente = await dataExistente(
+      "clientes",
+      "id",
+      "=",
+      cliente_id
+    );
 
     if (clienteExistente.length < 1) {
       return res.status(404).json(chat.error404);
@@ -313,33 +321,39 @@ const cadastrarPedido = async (req, res) => {
     for (const produtoInfo of pedidos_produtos) {
       const { produto_id, quantidade_produto } = produtoInfo;
 
-      let produto = await knex('produtos').where({ id: produto_id }).first();
+      let produto = await knex("produtos").where({ id: produto_id }).first();
 
       if (!produto) {
-        return res.status(404).json({ error: 'Produto não encontrado' });
+        return res.status(404).json({ error: "Produto não encontrado" });
       }
 
       if (produto.quantidade_estoque < quantidade_produto) {
-        return res.status(400).json({ error: `Quantidade em estoque insuficiente para o produto ${produto.descricao}` });
+        return res
+          .status(400)
+          .json({
+            error: `Quantidade em estoque insuficiente para o produto ${produto.descricao}`,
+          });
       }
 
       valorTotal += quantidade_produto * produto.valor;
 
-      await knex('produtos').where({ id: produto_id }).decrement('quantidade_estoque', quantidade_produto);
+      await knex("produtos")
+        .where({ id: produto_id })
+        .decrement("quantidade_estoque", quantidade_produto);
     }
 
-    await knex('pedidos').insert({
-      cliente_id,
-      observacao,
-      valor_total: valorTotal
-    })
-      .returning('id');
+    await knex("pedidos")
+      .insert({
+        cliente_id,
+        observacao,
+        valor_total: valorTotal
+      })
+      .returning("id");
 
     return res.status(201).json();
-
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json(chat.error500)
+    return res.status(500).json(chat.error500);
   }
 };
 
