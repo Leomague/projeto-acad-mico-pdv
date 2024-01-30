@@ -54,7 +54,7 @@ const schemaCadastroProduto = joi.object({
   })
 });
 
-const SchemaValidarCliente = joi.object({
+const schemaValidarCliente = joi.object({
   nome: joi.string().required().messages({
     'any.required': 'O campo nome é obrigatório',
     'string.empty': 'O campo nome é obrigatório'
@@ -78,7 +78,7 @@ const SchemaValidarCliente = joi.object({
   estado: joi.string()
 });
 
-const SchemaEditarCliente = joi.object({
+const schemaEditarCliente = joi.object({
   email: joi.string().email().messages({
     'string.email': 'O campo de email deve ter um formato válido'
   }),
@@ -98,6 +98,6 @@ module.exports = {
   schemaCadastroUsuario,
   schemaLogin,
   schemaCadastroProduto,
-  SchemaValidarCliente,
-  SchemaEditarCliente
+  schemaValidarCliente,
+  schemaEditarCliente
 };
