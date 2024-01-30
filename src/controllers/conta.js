@@ -1,6 +1,10 @@
 const knex = require("../config/connection/connection");
 const chat = require("../config/chat/statusCode");
 const { dataExistente } = require("../config/validation/existsInDB");
+const transport = require('../config/connection/mail');
+const fs = require('fs/promises');
+const send = require("../config/connection/mail");
+const Handlebars = require('handlebars');
 
 const listarCategorias = async (req, res) => {
   try {
@@ -312,6 +316,8 @@ const cadastrarPedido = async (req, res) => {
       cliente_id
     );
 
+    const cliente = clienteExistente[0];
+
     if (clienteExistente.length < 1) {
       return res.status(404).json(chat.error404);
     }
@@ -341,14 +347,25 @@ const cadastrarPedido = async (req, res) => {
         .where({ id: produto_id })
         .decrement("quantidade_estoque", quantidade_produto);
     }
+    await knex('pedidos').insert({
+      cliente_id,
+      observacao,
+      valor_total: valorTotal
+    }).returning('id');
 
-    await knex("pedidos")
-      .insert({
-        cliente_id,
-        observacao,
-        valor_total: valorTotal
-      })
-      .returning("id");
+    const arquivo = await fs.readFile('src/config/templates/orderEmail.html');
+
+    const compilador = Handlebars.compile(arquivo.toString());
+
+    const htmlMail = compilador({
+      nomeusuario: cliente.name
+    })
+
+    send(
+      `${cliente.name} <${cliente.email}>`,
+      'Seu pedido foi um sucesso!',
+      htmlMail
+    )
 
     return res.status(201).json();
   } catch (error) {
