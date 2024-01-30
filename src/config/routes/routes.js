@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const limitingRequests = require('../security/limitingRequests');
 const cors = require('cors');
 
 const conta = require('../../controllers/conta');
@@ -11,6 +12,7 @@ const schema = require('../middleware/validarCorpo');
 
 const rotas = express();
 
+rotas.use(limitingRequests);
 rotas.use(cors());
 
 rotas.get('/categorias', conta.listarCategorias);
