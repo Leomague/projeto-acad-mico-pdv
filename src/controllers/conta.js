@@ -136,20 +136,17 @@ const deletarProduto = async (req, res) => {
   if (!id) {
     return res.status(404).json(chat.error404);
   }
-
   try {
     const produtoExistente = await dataExistente("produtos", "id", "=", id);
 
     if (produtoExistente.length < 1) {
-      return res.status(404).json(chat.error404);
+      return res.status(403).json(chat.error403);
     }
 
     const produtoVinculadoEmPedido = await knex("pedido_produtos")
-      .where("produto_id", "=", id)
-      .select("pedido_id");
 
-    if (produtoVinculadoEmPedido.length > 0) {
-      return res.status(404).json(chat.error403);
+    if (produtoVinculadoEmPedido.length > 1) {
+      return res.status(404).json(chat.error404);
     }
 
     await knex("produtos").delete().where({ id });
@@ -316,11 +313,11 @@ const cadastrarPedido = async (req, res) => {
       cliente_id
     );
 
-    const cliente = clienteExistente[0];
-
-    if (clienteExistente.length < 1) {
+    if (!clienteExistente || clienteExistente.length < 1) {
       return res.status(404).json(chat.error404);
     }
+
+    const cliente = clienteExistente[0];
 
     let valorTotal = 0;
 
@@ -346,12 +343,31 @@ const cadastrarPedido = async (req, res) => {
       await knex("produtos")
         .where({ id: produto_id })
         .decrement("quantidade_estoque", quantidade_produto);
+
+      await knex('pedido_produtos').insert({
+        pedido_id: null,
+        produto_id,
+        quantidade_produto,
+        valor_produto: produto.valor
+      })
     }
-    await knex('pedidos').insert({
+
+    const [novoPedido] = await knex('pedidos').insert({
       cliente_id,
       observacao,
       valor_total: valorTotal
     }).returning('id');
+
+    for (let produto of pedidos_produtos) {
+
+      let produto_id = produto.produto_id
+
+      await knex('pedido_produtos')
+        .where({ produto_id })
+        .update({
+          pedido_id: novoPedido.id
+        })
+    }
 
     const arquivo = await fs.readFile('src/config/templates/orderEmail.html');
 
