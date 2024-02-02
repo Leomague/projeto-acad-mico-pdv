@@ -5,7 +5,6 @@ const limitingRequests = limiter.rateLimit({
   windowMs: 60 * 1000,
   max: 50,
   message: chat.error429
-})
-
+});
 
 module.exports = limitingRequests;
