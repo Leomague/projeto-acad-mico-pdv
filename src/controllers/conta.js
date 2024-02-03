@@ -30,6 +30,46 @@ const cadastrarProduto = async (req, res) => {
       "=",
       categoria_id
     );
+    const storage = multer.diskStorage({
+      destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Diretório de destino para armazenar as imagens
+      },
+      filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // Nome único para a imagem
+      },
+    });
+    
+    const upload = multer({ storage });
+    
+    const pool = new Pool({
+    });
+    
+    app.post('/produto', upload.single('produto_imagem'), async (req, res) => {
+      try {
+        const { descricao, quantidade_estoque, valor, categoria_id } = req.body;
+        let produto_imagem;
+
+        if (req.file) {
+          //Usado como exemplo
+          produto_imagem = `https://s3.us-east-005.backblazeb2.com/${req.file.filename}`;
+        }
+    
+        const query = `
+          INSERT INTO produtos (descricao, quantidade_estoque, valor, categoria_id, produto_imagem)
+          VALUES ($1, $2, $3, $4, $5)
+          RETURNING *;
+        `;
+    
+        const values = [descricao, quantidade_estoque, valor, categoria_id, produto_imagem];
+    
+        const result = await pool.query(query, values);
+    
+        res.status(201).json(result.rows[0]);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensagem: 'Erro interno no servidor' });
+      }
+    });
     if (!categoriaExistente) {
       return res.status(400).json(chat.error400);
     }
