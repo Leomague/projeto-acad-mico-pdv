@@ -9,6 +9,7 @@ const { login } = require('../../controllers/login');
 const usuarioLogado = require('../middleware/usuarioLogado');
 const { validateBodyRequest } = require('../validation/schemaUser');
 const schema = require('../middleware/validarCorpo');
+const multer = require('../middleware/multer');
 
 const rotas = express();
 
@@ -23,7 +24,7 @@ rotas.use(usuarioLogado)
 
 rotas.put('/usuario', usuario.editarPerfil);
 rotas.get('/perfil', usuario.detalharPerfil);
-rotas.post('/produto', validateBodyRequest(schema.schemaCadastroProduto), conta.cadastrarProduto);
+rotas.post('/produto', /*validateBodyRequest(schema.schemaCadastroProduto),*/ multer.single('produto_imagem'), conta.cadastrarProduto);
 rotas.get('/produto', conta.listarProdutos);
 rotas.get('/produto/:id', conta.DetalharProduto);
 rotas.put('/produto/:id', conta.editarProduto);

@@ -51,6 +51,11 @@ const schemaCadastroProduto = joi.object({
     'any.required': 'O campo de categoria_id é obrigatório',
     'string.empty': 'O campo de categoria_id é obrigatório',
     'number.positive': 'o campo categoria_id deve ser um valor positivo'
+  }),
+  produto_imagem: joi.string().uri({ scheme: ['http', 'https'] }).messages({
+    'any.required': 'O campo de produto_imagem é obrigatório',
+    'string.empty': 'O campo de produto_imagem não pode estar vazio',
+    'string.uri': 'O campo de produto_imagem deve ser uma URL válida',
   })
 });
 
