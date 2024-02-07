@@ -24,10 +24,10 @@ rotas.use(usuarioLogado)
 
 rotas.put('/usuario', usuario.editarPerfil);
 rotas.get('/perfil', usuario.detalharPerfil);
-rotas.post('/produto', /*validateBodyRequest(schema.schemaCadastroProduto),*/ multer.single('produto_imagem'), conta.cadastrarProduto);
+rotas.post('/produto', multer.single('produto_imagem'), validateBodyRequest(schema.schemaCadastroProduto), conta.cadastrarProduto);
 rotas.get('/produto', conta.listarProdutos);
 rotas.get('/produto/:id', conta.DetalharProduto);
-rotas.put('/produto/:id', conta.editarProduto);
+rotas.put('/produto/:id', multer.single('produto_imagem'), conta.editarProduto);
 rotas.delete('/produto/:id', conta.deletarProduto);
 rotas.post('/cliente', validateBodyRequest(schema.schemaValidarCliente), conta.cadastrarCliente);
 rotas.put('/cliente/:id', validateBodyRequest(schema.schemaEditarCliente), conta.editarDadosDoCliente);

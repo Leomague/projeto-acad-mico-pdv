@@ -4,7 +4,8 @@ const { dataExistente } = require("../config/validation/existsInDB");
 const fs = require('fs/promises');
 const send = require("../config/connection/mail");
 const Handlebars = require('handlebars');
-const s3 = require("../config/lib/aws");
+const { s3Client } = require("../config/lib/aws");
+const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
 const listarCategorias = async (req, res) => {
   try {
@@ -21,9 +22,11 @@ const listarCategorias = async (req, res) => {
 };
 
 const cadastrarProduto = async (req, res) => {
-  const { descricao, quantidade_estoque, valor, categoria_id, produto_imagem } = req.body;
+  let { descricao, quantidade_estoque, valor, categoria_id } = req.body;
 
-  const { file } = req
+  [quantidade_estoque, valor, categoria_id] = [quantidade_estoque, valor, categoria_id].map(Number);
+
+  const imagem = req.file;
 
   try {
     const categoriaExistente = await dataExistente(
@@ -32,16 +35,24 @@ const cadastrarProduto = async (req, res) => {
       "=",
       categoria_id
     );
-    if (!categoriaExistente) {
-      return res.status(400).json(chat.error400);
+    if (categoriaExistente < 1) {
+      return res.status(404).json(chat.error404);
     }
 
-    const arquivo = await s3.upload({
-      Bucket: process.env.BACKBLAZE_BUCKET,
-      Key: `produtos/${file.originalname}`,
-      Body: file.buffer,
-      ContentType: file.mimetype
-    }).promise();
+    // Upload do arquivo
+
+    const Key = `produtos/${encodeURIComponent(descricao)}`
+
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: process.env.KEY_NAME_BUCKET,
+        Key,
+        Body: imagem.buffer,
+        ContentType: imagem.mimetype
+      })
+    );
+
+    const s3URL = `https://${process.env.ENDPOINT_BUCKET}/${Key}`;
 
     const novoProduto = await knex("produtos")
       .insert({
@@ -49,7 +60,7 @@ const cadastrarProduto = async (req, res) => {
         quantidade_estoque,
         valor,
         categoria_id,
-        produto_imagem: arquivo.Location
+        produto_imagem: s3URL
       })
       .returning("*");
 
@@ -62,7 +73,11 @@ const cadastrarProduto = async (req, res) => {
 
 const editarProduto = async (req, res) => {
   const { id } = req.params;
-  const { descricao, quantidade_estoque, valor, categoria_id } = req.body;
+  let { descricao, quantidade_estoque, valor, categoria_id } = req.body;
+
+  [quantidade_estoque, valor, categoria_id] = [quantidade_estoque, valor, categoria_id].map(Number);
+
+  const imagem = req.file;
 
   if (!id) {
     return res.status(404).json(chat.error404);
@@ -90,23 +105,55 @@ const editarProduto = async (req, res) => {
 
     const produto = produtoExistente[0];
 
-    const produtoAtualizado = {
-      descricao: descricao || produto.descricao,
-      quantidade_estoque: quantidade_estoque || produto.quantidade_estoque,
-      valor: valor || produto.valor,
-      categoria_id: categoria_id || produto.categoria_id,
-    };
+    if (imagem) {
+      const Key = `produtos/${encodeURIComponent(produto.descricao)}`
+
+      const s3URL = `https://${process.env.ENDPOINT_BUCKET}/${Key}`;
+
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: process.env.KEY_NAME_BUCKET,
+          Key,
+          Body: imagem.buffer,
+          ContentType: imagem.mimetype
+        })
+      );
+
+      if (
+        descricao === produto.descricao &&
+        quantidade_estoque === produto.quantidade_estoque &&
+        `${valor}.00` === produto.valor &&
+        categoria_id === produto.categoria_id
+      ) {
+        return res.status(304).json();
+      }
+
+      await knex("produtos").where({ id }).update({
+        descricao,
+        quantidade_estoque,
+        valor,
+        categoria_id,
+        produto_imagem: s3URL
+      });
+
+      return res.status(200).json(chat.status200);
+    }
 
     if (
-      produtoAtualizado.descricao === produto.descricao &&
-      produtoAtualizado.quantidade_estoque === produto.quantidade_estoque &&
-      produtoAtualizado.valor === produto.valor &&
-      produtoAtualizado.categoria_id === produto.categoria_id
+      descricao === produto.descricao &&
+      quantidade_estoque === produto.quantidade_estoque &&
+      `${valor}.00` === produto.valor &&
+      categoria_id === produto.categoria_id
     ) {
       return res.status(304).json();
     }
 
-    await knex("produtos").where({ id }).update(produtoAtualizado);
+    await knex("produtos").where({ id }).update({
+      descricao,
+      quantidade_estoque,
+      valor,
+      categoria_id
+    });
 
     return res.status(200).json(chat.status200);
   } catch (error) {
@@ -212,10 +259,9 @@ const editarDadosDoCliente = async (req, res) => {
   try {
     const clienteExistente = await dataExistente("clientes", "id", "=", id);
 
-    if (!clienteExistente) {
-      return res.status(400).json(chat.error400);
+    if (clienteExistente < 1) {
+      return res.status(404).json(chat.error404);
     }
-
     const cliente = clienteExistente[0];
 
     if (email) {
@@ -270,6 +316,7 @@ const editarDadosDoCliente = async (req, res) => {
 
     return res.status(200).json(chat.status200);
   } catch (error) {
+    console.log(error.message);
     return res.status(500).json(chat.error500);
   }
 };

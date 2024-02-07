@@ -1,13 +1,19 @@
-const aws = require('aws-sdk');
+const {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  GetObjectCommand
+} = require('@aws-sdk/client-s3');
 
-const endpoint = new aws.Endpoint(process.env.ENDPOINT_S3);
-
-const s3 = new aws.S3({
-  endpoint,
+const s3Client = new S3Client({
+  endpoint: `https://${process.env.ENDPOINT_BUCKET}`,
+  region: process.env.LOCATION_BUCKET,
   credentials: {
-    accessKeyId: process.env.KEY_ID,
-    secretAccessKey: process.env.APP_KEY
+    accessKeyId: process.env.KEY_ID_BUCKET,
+    secretAccessKey: process.env.APP_KEY_BUCKET
   }
 });
 
-module.exports = s3;
+module.exports = {
+  s3Client
+};
