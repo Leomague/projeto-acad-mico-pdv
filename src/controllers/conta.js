@@ -99,7 +99,7 @@ const editarProduto = async (req, res) => {
       }
     }
 
-    if (!produtoExistente) {
+    if (produtoExistente < 1) {
       return res.status(400).json(chat.error400);
     }
 
