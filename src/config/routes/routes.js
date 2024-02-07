@@ -34,5 +34,6 @@ rotas.put('/cliente/:id', validateBodyRequest(schema.schemaEditarCliente), conta
 rotas.get('/cliente', conta.listarClientes);
 rotas.get('/cliente/:id', conta.detalharCliente);
 rotas.get('/pedido', conta.cadastrarPedido);
+rotas.get('/pedido', conta.listarPedidos );
 
 module.exports = rotas;

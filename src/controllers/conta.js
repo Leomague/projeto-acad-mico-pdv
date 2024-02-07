@@ -444,6 +444,26 @@ const cadastrarPedido = async (req, res) => {
   }
 };
 
+const listarPedidos =  async (req, res) => {
+  try {
+    const { cliente_id } = req.query;
+    let query = knex.select('pedidos.*', 'pedido_produtos.*')
+                    .from('pedidos')
+                    .leftJoin('pedido_produtos', 'pedidos.id', 'pedido_produtos.pedido_id');
+
+    if (cliente_id) {
+      query = query.where('pedidos.cliente_id', cliente_id);
+    }
+
+    const pedidos = await query;
+
+    res.json(pedidos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(chat.error500);
+  }
+};
+
 module.exports = {
   listarCategorias,
   cadastrarProduto,
@@ -455,5 +475,6 @@ module.exports = {
   editarDadosDoCliente,
   listarClientes,
   cadastrarCliente,
-  cadastrarPedido
+  cadastrarPedido,
+  listarPedidos
 };
