@@ -33,7 +33,7 @@ rotas.post('/cliente', validateBodyRequest(schema.schemaValidarCliente), conta.c
 rotas.put('/cliente/:id', validateBodyRequest(schema.schemaEditarCliente), conta.editarDadosDoCliente);
 rotas.get('/cliente', conta.listarClientes);
 rotas.get('/cliente/:id', conta.detalharCliente);
-rotas.get('/pedido', conta.cadastrarPedido);
-rotas.get('/pedido', conta.listarPedidos );
+rotas.post('/pedido', conta.cadastrarPedido);
+rotas.get('/pedido', conta.listarPedidos);
 
 module.exports = rotas;

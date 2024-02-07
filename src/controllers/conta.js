@@ -444,25 +444,28 @@ const cadastrarPedido = async (req, res) => {
   }
 };
 
-const listarPedidos =  async (req, res) => {
-  try {
-    const { cliente_id } = req.query;
-    let query = knex.select('pedidos.*', 'pedido_produtos.*')
-                    .from('pedidos')
-                    .leftJoin('pedido_produtos', 'pedidos.id', 'pedido_produtos.pedido_id');
+const listarPedidos = async (req, res) => {
+  const { cliente_id } = req.query;
+  let pedidos = [];
+  let retorno = [];
 
-    if (cliente_id) {
-      query = query.where('pedidos.cliente_id', cliente_id);
+  try {
+    if (!cliente_id) {
+      pedidos = await knex('pedidos');
+    } else {
+      pedidos = await knex('pedidos').where("cliente_id", cliente_id);
     }
 
-    const pedidos = await query;
+    for (let pedido of pedidos) {
+      pedido.pedido_produtos = await knex('pedido_produtos').where('id', '=', pedido.id)
+      retorno.push(pedido);
+    }
 
-    res.json(pedidos);
+    return res.status(200).json(retorno);
   } catch (error) {
-    console.error(error);
-    res.status(500).json(chat.error500);
+    return res.status(500).json(chat.error500)
   }
-};
+}
 
 module.exports = {
   listarCategorias,
