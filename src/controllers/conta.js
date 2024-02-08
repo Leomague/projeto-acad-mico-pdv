@@ -188,31 +188,30 @@ const DetalharProduto = async (req, res) => {
 };
 
 const deletarProduto = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params
 
-  if (!id) {
-    return res.status(404).json(chat.error404);
-  }
   try {
-    const produtoExistente = await dataExistente("produtos", "id", "=", id);
 
-    if (produtoExistente.length < 1) {
+    const produtoExistente = await knex('produtos').where('id', id);
+
+    if (!produtoExistente || produtoExistente.length === 0) {
+      return res.status(404).json(chat.error404);
+    }
+
+    const produtoPedido = await knex('pedido_produtos').where('produto_id', id);
+
+    if (produtoPedido.length > 0) {
       return res.status(403).json(chat.error403);
     }
 
-    const produtoVinculadoEmPedido = await knex("pedido_produtos")
+    await deletarArquivo(req, res);
+    await knex('produtos').delete('id').where('id', id);
+    return res.status(403).json(chat.status201);
 
-    if (produtoVinculadoEmPedido.length > 1) {
-      return res.status(403).json(chat.error403);
-    }
-
-    await knex("produtos").delete().where({ id });
-
-    return res.status(204).json();
   } catch (error) {
     return res.status(500).json(chat.error500);
   }
-};
+}
 
 const cadastrarCliente = async (req, res) => {
   const { nome, email, cpf, cep, rua, numero, bairro, cidade, estado } =
