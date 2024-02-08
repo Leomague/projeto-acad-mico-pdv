@@ -117,7 +117,7 @@ const listarPedidos = async (req, res) => {
     }
 
     for (let pedido of pedidos) {
-      pedido.pedido_produtos = await knex('pedido_produtos').where('id', '=', pedido.id)
+      pedido.pedido_produtos = await knex('pedido_produtos').where('pedido_id', '=', pedido.id)
       retorno.push(pedido);
     }
 
