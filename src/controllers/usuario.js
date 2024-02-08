@@ -1,6 +1,8 @@
 const knex = require('../config/connection/connection');
 const bcrypt = require('bcrypt');
 const chat = require('../config/chat/statusCode');
+const jwt = require('jsonwebtoken');
+const senhaJwt = require('../config/security/passwordJwt');
 
 const cadastrarUsuario = async (req, res) => {
   const { nome, email, senha } = req.body;
@@ -22,6 +24,38 @@ const cadastrarUsuario = async (req, res) => {
 
   } catch (error) {
     console.error(error);
+    return res.status(500).json(chat.error500);
+  }
+};
+
+const login = async (req, res) => {
+  const { email, senha } = req.body;
+  try {
+    const usuarios = await knex('usuarios').where({ email });
+
+    if (usuarios.length < 1) {
+      return res.status(400).json(chat.error400);
+    }
+
+    const usuario = usuarios[0];
+
+    const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+
+    if (!senhaCorreta) {
+      return res.status(400).json(chat.error400);
+    }
+
+    const token = jwt.sign({ id: usuario.id }, senhaJwt, { expiresIn: '8h' });
+
+    const { senha: _, ...dadosUsuario } = usuario;
+
+    return res.status(200).json({
+      usuario: dadosUsuario,
+      token
+    });
+
+  } catch (error) {
+    console.log(error);
     return res.status(500).json(chat.error500);
   }
 };
@@ -71,6 +105,7 @@ const editarPerfil = async (req, res) => {
 
 module.exports = {
   cadastrarUsuario,
+  login,
   detalharPerfil,
   editarPerfil
 };
