@@ -2,10 +2,10 @@ const knex = require("../config/connection/connection");
 const chat = require("../config/chat/statusCode");
 const { dataExistente } = require("../config/validation/existsInDB");
 const fs = require('fs/promises');
-const send = require("../config/connection/mail");
+const send = require("../config/utils/send");
 const Handlebars = require('handlebars');
-const { s3Client } = require("../config/lib/aws");
-const { PutObjectCommand } = require("@aws-sdk/client-s3");
+const { s3Client, PutObjectCommand } = require("../config/lib/aws");
+const excluirImagemDoProduto = require('../config/utils/deleteImage')
 
 const listarCategorias = async (req, res) => {
   try {
@@ -192,22 +192,26 @@ const deletarProduto = async (req, res) => {
 
   try {
 
-    const produtoExistente = await knex('produtos').where('id', id);
+    const produtoExistente = await knex('produtos').where({ id });
 
-    if (!produtoExistente || produtoExistente.length === 0) {
+    if (!produtoExistente || produtoExistente.length < 1) {
       return res.status(404).json(chat.error404);
     }
 
     const produtoPedido = await knex('pedido_produtos').where('produto_id', id);
 
-    if (produtoPedido.length > 0) {
+    if (produtoPedido.length > 1) {
       return res.status(403).json(chat.error403);
     }
+    const imagemProduto = produtoExistente[0].produto_imagem;
 
-    await deletarArquivo(req, res);
-    await knex('produtos').delete('id').where('id', id);
-    return res.status(403).json(chat.status201);
+    if (imagemProduto) {
+      await excluirImagemDoProduto(imagemProduto)
+    }
 
+    await knex('produtos').delete('id').where({ id });
+
+    return res.status(203).json();
   } catch (error) {
     return res.status(500).json(chat.error500);
   }
