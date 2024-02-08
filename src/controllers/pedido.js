@@ -112,6 +112,10 @@ const listarPedidos = async (req, res) => {
       pedidos = await knex('pedidos').where("cliente_id", cliente_id);
     }
 
+    if (!pedidos || pedidos < 1) {
+      return res.status(404).json(chat.error404);
+    }
+
     for (let pedido of pedidos) {
       pedido.pedido_produtos = await knex('pedido_produtos').where('id', '=', pedido.id)
       retorno.push(pedido);
