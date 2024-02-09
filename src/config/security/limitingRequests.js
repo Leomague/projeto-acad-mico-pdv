@@ -3,7 +3,7 @@ const chat = require('../chat/statusCode');
 
 const limitingRequests = limiter.rateLimit({
   windowMs: 60 * 1000,
-  max: 50,
+  max: 150,
   message: chat.error429
 });
 
