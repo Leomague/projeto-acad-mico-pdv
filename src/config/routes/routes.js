@@ -18,8 +18,8 @@ const rotas = express();
 rotas.use(limitingRequests);
 rotas.use(cors());
 
-rotas.get('/categorias', listarCategorias);
-rotas.post('/usuario', validateBodyRequest(schema.schemaCadastroUsuario), usuario.cadastrarUsuario);
+rotas.get('/categoria', listarCategorias);
+rotas.put('/usuario', validateBodyRequest(schema.schemaCadastroUsuario), usuario.cadastrarUsuario);
 rotas.post('/login', validateBodyRequest(schema.schemaLogin), usuario.login);
 
 rotas.use(usuarioLogado);
